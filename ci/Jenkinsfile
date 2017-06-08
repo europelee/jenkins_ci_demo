@@ -1,0 +1,43 @@
+#!groovy
+
+node {
+    stage ('checkout') {
+        checkout scm
+    }
+    stage ('build') {
+        echo "build"
+        echo "make distribution(like tar.gz rpm etc.)"
+        //todo: make distribution
+        //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
+    }
+    stage ('alpha delivery') {
+        echo "upload distribution to softrepo"
+        //todo: upload distribution to softrepo
+        //eg: scp jenkins_ci_demo_1.0.0-alpha.tar.gz to /opt/softrepo/third_party/jenkins_ci_demo/1.0.0 
+    }
+    stage ('deploy2qa_xm') {
+        echo "deploy distribution to qa_xm dockers"
+        //todo: deploy distribution to qa_xm dockers
+        //eg: ssh -t -p 57891 root@1.1.1.1 "(wget ${jenkins_ci_demo_1.0.0-alpha_url}; run jenkins_ci_demo_1.0.0_deploy.sh)"
+    }
+    stage ('auto_test') {
+        echo "auto_test"
+        //todo: feature test, integration test
+        //eg: run auto_test.sh
+    }
+    stage ('beta build') {
+        echo "beta build"
+        //eg: generate jenkins_ci_demo_1.0.0-beta.tar.gz
+        //eg: git tag jenkins_ci_demo_1.0.0-beta or branch 1.0.0
+    }
+    stage ('beta delivery') {
+        echo "upload distribution to softrepo"
+        //todo: upload distribution to softrepo
+        //eg: scp jenkins_ci_demo_1.0.0-beta.tar.gz to /opt/softrepo/third_party/jenkins_ci_demo/1.0.0 
+    }
+    stage ('deploy2qa_uk') {
+        echo "deploy distribution to qa_uk dockers"
+        //todo: deploy distribution to qa_uk dockers
+        //eg: ssh -t -p 57891 root@1.1.1.1 "(wget ${jenkins_ci_demo_1.0.0-beta_url}; run jenkins_ci_demo_1.0.0_deploy.sh)"
+    }
+}
