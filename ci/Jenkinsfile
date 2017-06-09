@@ -1,6 +1,6 @@
 #!groovy
 
-node {
+node('master') {
     stage ('checkout') {
         checkout scm
     }
@@ -35,9 +35,32 @@ node {
         //todo: upload distribution to softrepo
         //eg: scp jenkins_ci_demo_1.0.0-beta.tar.gz to /opt/softrepo/third_party/jenkins_ci_demo/1.0.0 
     }
-    stage ('deploy2qa_uk') {
-        echo "deploy distribution to qa_uk dockers"
-        //todo: deploy distribution to qa_uk dockers
-        //eg: ssh -t -p 57891 root@1.1.1.1 "(wget ${jenkins_ci_demo_1.0.0-beta_url}; run jenkins_ci_demo_1.0.0_deploy.sh)"
+    def did_timeout = false
+    def did_input = true
+    stage ('approvement') {
+        try {
+            timeout(time: 7, unit: 'DAYS') {
+                def userInput = input(
+                id: 'userInput', message: 'Do you want to deploy this build?', parameters: [
+                [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Ticking this box will do a deployment', name: 'Deploy']
+                ])
+                env.ENV = userInput  
+            }   
+        } catch(err) { // timeout reached or input false
+            def user = err.getCauses()[0].getUser()
+            if('SYSTEM' == user.toString()) { // SYSTEM means timeout.
+                didTimeout = true
+            } else {
+                echo "Aborted by: [${user}]"
+            }
+            did_input = false
+        }   
+    }
+    if (did_input) {
+        stage ('deploy2qa_uk') {
+            echo "deploy distribution to qa_uk dockers"
+            //todo: deploy distribution to qa_uk dockers
+            //eg: ssh -t -p 57891 root@1.1.1.1 "(wget ${jenkins_ci_demo_1.0.0-beta_url}; run jenkins_ci_demo_1.0.0_deploy.sh)"
+        }
     }
 }
