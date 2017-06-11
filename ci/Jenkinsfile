@@ -24,7 +24,7 @@ node('master') {
         def install_cmd = "(cd /opt/setuptools-28.8.0; python setup.py install)"
         sh "(${dl_cmd}; ${untar_cmd}; ${install_cmd})"
         def workspace = pwd()
-        sh "(mkdir /usr/local/jenkins_ci_demo;cp -r * /usr/local/jenkins_ci_demo/)"
+        sh "(ls /usr/local/jenkins_ci_demo||mkdir /usr/local/jenkins_ci_demo;cp -r * /usr/local/jenkins_ci_demo/)"
         sh "(cd /usr/local/jenkins_ci_demo;python setup.py install)"
     }
     stage ('auto_test') {
