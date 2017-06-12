@@ -9,6 +9,13 @@ node('master') {
         echo "make distribution(like tar.gz rpm etc.)"
         //todo: make distribution
         //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
+        stage('SonarQube analysis') {
+        // requires SonarQube Scanner 2.8+
+        def scannerHome = tool 'sonar-scanner-3.0.3.778';
+        withSonarQubeEnv('My SonarQube Server') {
+          sh "${scannerHome}/bin/sonar-scanner"
+        }
+        }
     }
     stage ('alpha delivery') {
         echo "upload distribution to softrepo"
