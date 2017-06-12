@@ -1,5 +1,5 @@
 #!groovy
-pipeline {
+
 node('master') {
     stage ('checkout') {
         checkout scm
@@ -28,26 +28,19 @@ node('master') {
         sh "(cd /usr/local/jenkins_ci_demo;python setup.py install)"
     }
     stage ('auto_test') {
-        steps {
-            echo "auto_test"
-            //todo: feature test, integration test
-            //eg: run auto_test.sh
-            def workspace = pwd()
-            sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/test_result.html)"
-        }
-        post {
-            success {
-              // publish html
-              publishHTML target: [
-                  allowMissing: false,
-                  alwaysLinkToLastBuild: false,
-                  keepAll: true,
-                  reportDir: 'coverage',
-                  reportFiles: 'test_result.html',
-                  reportName: 'RCov Report'
-                ]
-            }
-        }  
+        echo "auto_test"
+        //todo: feature test, integration test
+        //eg: run auto_test.sh
+        def workspace = pwd()
+        sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/test_result.html)"
+        publishHTML (target: [
+          allowMissing: false,
+          alwaysLinkToLastBuild: false,
+          keepAll: true,
+          reportDir: 'coverage',
+          reportFiles: 'test_result.html',
+          reportName: "RCov Report"
+        ]) 
     }
     stage ('beta build') {
         echo "beta build"
@@ -87,5 +80,4 @@ node('master') {
             //eg: ssh -t -p 57891 root@1.1.1.1 "(wget ${jenkins_ci_demo_1.0.0-beta_url}; run jenkins_ci_demo_1.0.0_deploy.sh)"
         }
     }
-}
 }
