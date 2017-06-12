@@ -28,10 +28,26 @@ node('master') {
         sh "(cd /usr/local/jenkins_ci_demo;python setup.py install)"
     }
     stage ('auto_test') {
-        echo "auto_test"
-        //todo: feature test, integration test
-        //eg: run auto_test.sh
-        sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=test_result.html)"
+        steps {
+            echo "auto_test"
+            //todo: feature test, integration test
+            //eg: run auto_test.sh
+            def workspace = pwd()
+            sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/test_result.html)"
+        }
+        post {
+            success {
+              // publish html
+              publishHTML target: [
+                  allowMissing: false,
+                  alwaysLinkToLastBuild: false,
+                  keepAll: true,
+                  reportDir: 'coverage',
+                  reportFiles: 'test_result.html',
+                  reportName: 'RCov Report'
+                ]
+            }
+        }  
     }
     stage ('beta build') {
         echo "beta build"
