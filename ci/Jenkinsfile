@@ -15,7 +15,7 @@ node('master') {
     // requires SonarQube Scanner 2.8+
     def scannerHome = tool 'sonar-scanner-3.0.3.778';
     withSonarQubeEnv('sonarqube-5.6.6') {
-      sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=myproject -Dsonar.sources=."
+      sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=jenkins_ci_demo -Dsonar.projectName=jenkins_ci_demo -Dsonar.projectVersion=1.0 -Dsonar.sources=."
     }
     }
     stage ('alpha delivery') {
