@@ -32,7 +32,7 @@ node('master') {
         //todo: feature test, integration test
         //eg: run auto_test.sh
         def workspace = pwd()
-        sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/test_result.html)"
+        sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/coverage/test_result.html)"
         publishHTML (target: [
           allowMissing: false,
           alwaysLinkToLastBuild: false,
