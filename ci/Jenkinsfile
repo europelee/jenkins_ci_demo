@@ -1,5 +1,5 @@
 #!groovy
-
+pipeline {
 node('master') {
     stage ('checkout') {
         checkout scm
@@ -87,4 +87,5 @@ node('master') {
             //eg: ssh -t -p 57891 root@1.1.1.1 "(wget ${jenkins_ci_demo_1.0.0-beta_url}; run jenkins_ci_demo_1.0.0_deploy.sh)"
         }
     }
+}
 }
