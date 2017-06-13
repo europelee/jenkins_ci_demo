@@ -8,7 +8,6 @@ class DemoAdd:
 
 
 def main():
-    print "demo"
     print "trigger"
     print "hi"
     demo = DemoAdd()
