@@ -27,10 +27,11 @@ node('master') {
         //def install_cmd = "(cd /opt/setuptools-28.8.0; python setup.py install)"
         //sh "(${dl_cmd}; ${untar_cmd}; ${install_cmd})"
         def workspace = pwd()
-        def version = readFile "${workspace}/VERSION"
+        def verstr = readFile "${workspace}/VERSION"
+        def version = verstr.trim()
         echo "${version}" 
         def utils = load "${workspace}/ci/utils.groovy"
-        def pkg = 'jenksin_ci_demo-' + version + '.tar.gz'
+        def pkg = 'jenkins_ci_demo-' + version + '.tar.gz'
         echo "${pkg}"
         utils.deploy2dev("dist", pkg) 
     }
