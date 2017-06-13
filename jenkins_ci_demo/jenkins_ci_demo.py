@@ -10,6 +10,7 @@ class DemoAdd:
 def main():
     print "demo"
     print "trigger"
+    print "hi"
     demo = DemoAdd()
     print demo.add(3, 4)
 
