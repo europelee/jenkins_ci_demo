@@ -7,6 +7,7 @@ node('master') {
     stage ('build') {
         echo "build"
         echo "make distribution(like tar.gz rpm etc.)"
+        echo "${env.BRANCH_NAME}}"
         //todo: make distribution
         //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
     }
