@@ -33,6 +33,6 @@ node('master') {
         def utils = load "${workspace}/ci/utils.groovy"
         def pkg = 'jenkins_ci_demo-' + version + '.tar.gz'
         echo "${pkg}"
-        utils.deploy2dev("dist", pkg) 
+        utils.deploy2dev("${workspace}/dist", pkg) 
     }
 }
