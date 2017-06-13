@@ -28,8 +28,9 @@ node('master') {
         //sh "(${dl_cmd}; ${untar_cmd}; ${install_cmd})"
         def workspace = pwd()
         def version = readFile "${workspace}/VERSION"
+        echo ${version} 
         def utils = load "${workspace}/ci/utils.groovy"
-        def pkg = 'jenksin_ci_demo-' + ${version} + ".tar.gz"
+        def pkg = 'jenksin_ci_demo-' + version + ".tar.gz"
         utils.deploy2dev("dist", pkg) 
     }
 }
