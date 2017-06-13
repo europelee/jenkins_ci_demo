@@ -46,6 +46,19 @@ def deploy2dev(dir, pkg) {
     parallel steps4parallel
 }
 
+def deploy2qa_xm2(dir, pkg) {
+    def config = readYaml file: 'ci/config.yml'
+    def steps4parallel = [:]
+    for( i = 0; i < config.qa_xm.dockers.size(); i++) {
+        def docker_cfg = config.qa_xm.dockers[i]
+        def name = docker_cfg.name
+        def step_name = "echoing ${name}"
+        echo "${docker_cfg.ssh_host}"
+        steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, dir, pkg)
+    }
+    parallel steps4parallel
+}
+
 def deploy2qa_xm(version, pkg) {
     def config = readYaml file: 'ci/config.yml'
     def repo_url = config.softrepo.url
