@@ -23,7 +23,7 @@ def deploy_cmd(host, port, dir, pkg) {
         node {
             def dir_name = pkg - ".tar.gz"
             def dst_dir="/opt"
-            sh "scp -P${port} $dir/${pkg} ${host}:${dst_dir}"
+            sh "scp -P${port} ${dir}/${pkg} ${host}:${dst_dir}"
             def untar_cmd = "(cd ${dst_dir}; tar xvf ${pkg})"
             def cp_cmd = "(ls /usr/local/jenkins_ci_demo||mkdir /usr/local/jenkins_ci_demo;cp -r /opt/${dir_name}/* /usr/local/jenkins_ci_demo/)"
             def install_cmd = "(cd /usr/local/jenkins_ci_demo;python setup.py install)"
@@ -40,6 +40,7 @@ def deploy2dev(dir, pkg) {
         def docker_cfg = config.dev.dockers[i]
         def name = docker_cfg.name
         def step_name = "echoing ${name}"
+        echo "${docker_cfg.ssh_host}"
         steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, dir, pkg)
     }
     parallel steps4parallel
