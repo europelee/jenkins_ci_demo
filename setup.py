@@ -5,7 +5,7 @@ from jenkins_ci_demo import __version__
 from setuptools import setup
 # from distutils.core import setup
 
-f = open(os.path.join(os.path.dirname(__file__), 'README.md'))
+f = open(os.path.join(os.path.dirname(__file__), 'README'))
 long_description = f.read()
 f.close()
 
