@@ -1,5 +1,6 @@
 #!groovy
 
+def version = ''
 node('master') {
     stage ('checkout') {
         checkout scm
@@ -28,14 +29,36 @@ node('master') {
         //sh "(${dl_cmd}; ${untar_cmd}; ${install_cmd})"
         def workspace = pwd()
         def verstr = readFile "${workspace}/VERSION"
-        def version = verstr.trim()
+        version = verstr.trim()
         echo "${version}" 
         def utils = load "${workspace}/ci/utils.groovy"
         def pkg = 'jenkins_ci_demo-' + version + '.tar.gz'
         echo "${pkg}"
-        utils.deploy2dev("${workspace}/dist", pkg) 
-        mail (to: 'wwweurope@163.com',
-             subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) was already deployed",
-             body: "a test"); 
+        utils.deploy2qa_xm2("${workspace}/dist", pkg) 
+    }
+
+    stage ('auto test') {
+        echo "auto test"
+        def workspace = pwd()
+        sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/coverage/test_result.html)"
+        publishHTML (target: [
+          allowMissing: false,
+          alwaysLinkToLastBuild: false,
+          keepAll: true,
+          reportDir: 'coverage',
+          reportFiles: 'test_result.html',
+          reportName: "RCov Report"
+        ]) 
+    }
+
+    stage ('tag') {
+        sh "git config user.name \"Jenkins Pipeline\""
+        sh "git config user.email jenkins@quantilcdn.com"
+        // Next, tag this commit.
+        def msg = "\"Automatically created tag ${version}-alpha1\""
+        sh "git tag -a -m ${msg} ${version}-alpha1"
+        // Finally, push to the repo.
+        // For this to work, the ssh keys must be available in Jenkins' ~/.ssh folder
+        sh "git push origin ${version}-alpha1" 
     }
 }
