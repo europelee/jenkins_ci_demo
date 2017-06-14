@@ -39,6 +39,16 @@ node('master') {
 
     stage ('auto test') {
         echo "auto test"
+        def workspace = pwd()
+        sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/coverage/test_result.html)"
+        publishHTML (target: [
+          allowMissing: false,
+          alwaysLinkToLastBuild: false,
+          keepAll: true,
+          reportDir: 'coverage',
+          reportFiles: 'test_result.html',
+          reportName: "RCov Report"
+        ]) 
     }
 
     stage ('tag') {

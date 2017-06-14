@@ -34,5 +34,8 @@ node('master') {
         def pkg = 'jenkins_ci_demo-' + version + '.tar.gz'
         echo "${pkg}"
         utils.deploy2dev("${workspace}/dist", pkg) 
+        mail (to: 'wwweurope@163.com',
+             subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) was already deployed",
+             body: "a test"); 
     }
 }
