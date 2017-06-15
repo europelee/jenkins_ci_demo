@@ -6,6 +6,8 @@ node('master') {
         checkout scm
     }
     stage ('build') {
+        def GIT_BRANCH = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
+        echo "${GIT_BRANCH}"
         echo "build(compile, code analysis, unit test, pkg)"
         echo "make distribution(like tar.gz rpm etc.)"
         // requires SonarQube Scanner 2.8+
@@ -53,8 +55,6 @@ node('master') {
 
     stage ('tag') {
         // Next, tag this commit.
-        def GIT_BRANCH = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
-        echo "${GIT_BRANCH}"
         def msg = "\"Automatically created tag ${version}-alpha${env.BUILD_NUMBER}\""
         sh "git tag -a -m ${msg} ${version}-alpha${env.BUILD_NUMBER}"
         // Finally, push to the repo.
