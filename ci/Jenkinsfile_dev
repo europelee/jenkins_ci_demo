@@ -10,14 +10,14 @@ node('master') {
             echo "make distribution(like tar.gz rpm etc.)"
 
             def workspace = pwd()
-            sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/coverage/test_result.html)"
+            sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/test_report/test_result.html)"
             publishHTML (target: [
                 allowMissing: false,
                 alwaysLinkToLastBuild: false,
                 keepAll: true,
-                reportDir: 'coverage',
+                reportDir: 'test_report',
                 reportFiles: 'test_result.html',
-                reportName: "RCov Report"
+                reportName: "TestReport"
             ]) 
             // requires SonarQube Scanner 2.8+
             def scannerHome = tool 'sonar-scanner-3.0.3.778';
