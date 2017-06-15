@@ -55,10 +55,10 @@ node('master') {
         sh "git config user.name \"Jenkins Pipeline\""
         sh "git config user.email jenkins@quantilcdn.com"
         // Next, tag this commit.
-        def msg = "\"Automatically created tag ${version}-alpha1\""
-        sh "git tag -a -m ${msg} ${version}-alpha1"
+        def msg = "\"Automatically created tag ${version}-alpha${env.BUILD_NUMBER}\""
+        sh "git tag -a -m ${msg} ${version}-alpha${env.BUILD_NUMBER}"
         // Finally, push to the repo.
         // For this to work, the ssh keys must be available in Jenkins' ~/.ssh folder
-        sh "git push origin ${version}-alpha1" 
+        sh "git push origin ${version}-alpha${env.BUILD_NUMBER}" 
     }
 }
