@@ -53,9 +53,14 @@ node('master') {
     }
     finally {
         if (currentBuild.result == 'SUCCESS') {
-            mail (to: 'ouzhou.li@quantil.com',
-                 subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) was already deployed",
-                 body: "a test");
+            emailext (
+              subject: "some subject",
+              body: '${DEFAULT_CONTENT}',
+              to: "ouzhou.li@quantil.com"
+            ) 
+            //mail (to: 'ouzhou.li@quantil.com',
+            //     subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) was already deployed",
+            //     body: "a test");
         }
         else {
             mail (to: 'ouzhou.li@quantil.com',
