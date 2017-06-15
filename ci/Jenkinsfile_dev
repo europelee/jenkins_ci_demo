@@ -63,9 +63,11 @@ node('master') {
             //     body: "a test");
         }
         else {
-            mail (to: 'ouzhou.li@quantil.com',
-                 subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) fail",
-                 body: "a test");
+            emailext (
+              subject: "some subject",
+              body: '${DEFAULT_CONTENT}',
+              to: "ouzhou.li@quantil.com"
+            ) 
         }
     }
 }
