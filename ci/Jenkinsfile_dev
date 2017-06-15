@@ -26,7 +26,6 @@ node('master') {
             }
             //todo: make distribution
             //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
-            def workspace = pwd()
             sh "python setup.py sdist"
         }
         
