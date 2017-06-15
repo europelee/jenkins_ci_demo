@@ -55,6 +55,7 @@ node('master') {
         sh "git config user.name \"Jenkins Pipeline\""
         sh "git config user.email jenkins@quantilcdn.com"
         // Next, tag this commit.
+        echo "${env.BRANCH_NAME}"
         def msg = "\"Automatically created tag ${version}-alpha${env.BUILD_NUMBER}\""
         sh "git tag -a -m ${msg} ${version}-alpha${env.BUILD_NUMBER}"
         // Finally, push to the repo.
