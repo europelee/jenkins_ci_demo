@@ -54,7 +54,7 @@ node('master') {
     finally {
         if (currentBuild.result == 'SUCCESS') {
             emailext (
-              subject: "some subject",
+              subject: '${DEFAULT_SUBJECT}',
               body: '${DEFAULT_CONTENT}',
               to: "ouzhou.li@quantil.com"
             ) 
@@ -64,7 +64,7 @@ node('master') {
         }
         else {
             emailext (
-              subject: "some subject",
+              subject: '${DEFAULT_SUBJECT}',
               body: '${DEFAULT_CONTENT}',
               to: "ouzhou.li@quantil.com"
             ) 
