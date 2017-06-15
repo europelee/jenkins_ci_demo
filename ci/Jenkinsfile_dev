@@ -56,7 +56,7 @@ node('master') {
             emailext (
               subject: '${DEFAULT_SUBJECT}',
               body: '${DEFAULT_CONTENT}',
-              to: '${$DEFAULT_REPLYTO}' 
+              to: '${DEFAULT_REPLYTO}' 
             ) 
             //mail (to: 'ouzhou.li@quantil.com',
             //     subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) was already deployed",
@@ -66,7 +66,7 @@ node('master') {
             emailext (
               subject: '${DEFAULT_SUBJECT}',
               body: '${DEFAULT_CONTENT}',
-              to: '${$DEFAULT_REPLYTO}'
+              to: '${DEFAULT_REPLYTO}'
             ) 
         }
     }
