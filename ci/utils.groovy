@@ -13,7 +13,7 @@ def upload2softrepo(pkg, dir) {
 def ssh_cmd(host, port, cmd) {
     return {
         node {
-            sh "ssh -t -p- ${port} ${host} \"${cmd}\""
+            sh "ssh -t -p ${port} ${host} \"${cmd}\""
         }
     }
 }
@@ -28,7 +28,7 @@ def deploy_cmd(host, port, dir, pkg) {
             def cp_cmd = "(ls /usr/local/jenkins_ci_demo||mkdir /usr/local/jenkins_ci_demo;cp -r /opt/${dir_name}/* /usr/local/jenkins_ci_demo/)"
             def install_cmd = "(cd /usr/local/jenkins_ci_demo;python setup.py install)"
             def cmd = "(${untar_cmd}; ${cp_cmd}; ${install_cmd})"
-            sh "ssh -t -p ${port} ${host} \"${cmd}\""
+            sh "sshi -t -p ${port} ${host} \"${cmd}\""
         }
     }
 }
