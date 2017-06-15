@@ -13,7 +13,7 @@ def upload2softrepo(pkg, dir) {
 def ssh_cmd(host, port, cmd) {
     return {
         node {
-            sh "ssh -t -p ${port} ${host} \"${cmd}\""
+            sh "ssh -t -p- ${port} ${host} \"${cmd}\""
         }
     }
 }
