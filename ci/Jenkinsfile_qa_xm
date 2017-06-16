@@ -52,14 +52,16 @@ node('master') {
     }
 
     stage ('tag') {
+        def GIT_BRANCH = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
+        echo "${GIT_BRANCH}"
+        def branch_subname = GIT_BRANCH.substring(GIT_BRANCH.lastIndexOf("/") + 1, GIT_BRANCH.length())
         sh "git config user.name \"Jenkins Pipeline\""
         sh "git config user.email jenkins@quantilcdn.com"
         // Next, tag this commit.
-        echo "${env.BRANCH_NAME}"
-        def msg = "\"Automatically created tag ${version}-alpha${env.BUILD_NUMBER}\""
-        sh "git tag -a -m ${msg} ${version}-alpha${env.BUILD_NUMBER}"
+        def msg = "\"Automatically created tag ${branch_subname}\""
+        sh "git tag -a -m ${msg} ${branch_subname}"
         // Finally, push to the repo.
         // For this to work, the ssh keys must be available in Jenkins' ~/.ssh folder
-        sh "git push origin ${version}-alpha${env.BUILD_NUMBER}" 
+        sh "git push origin ${branch_subname}" 
     }
 }
