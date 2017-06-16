@@ -26,7 +26,7 @@ def deploy_cmd(host, port, dir, pkg) {
             sh "scp -P${port} ${dir}/${pkg} ${host}:${dst_dir}"
             def untar_cmd = "(cd ${dst_dir}; tar xvf ${pkg})"
             def cp_cmd = "(ls /usr/local/jenkins_ci_demo||mkdir /usr/local/jenkins_ci_demo;cp -r /opt/${dir_name}/* /usr/local/jenkins_ci_demo/)"
-            def install_cmd = "(cd /usr/local/jenkins_ci_demo;python setup.py install)"
+            // def install_cmd = "(cd /usr/local/jenkins_ci_demo;python setup.py install)"
             def test_cmd = "(cd /usr/local/jenkins_ci_demo; cp jenkins_ci_demo/index.html /usr/share/httpd/noindex/)"
             def cmd = "(${untar_cmd}; ${cp_cmd}; ${install_cmd}; ${test_cmd})"
             sh "ssh -t -p ${port} ${host} \"${cmd}\""
