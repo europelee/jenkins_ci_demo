@@ -16,8 +16,6 @@ setup(name='jenkins_ci_demo',
       author='europelee',
       author_email='europe.lee@gmail.com',
       packages=['jenkins_ci_demo'],
-      package_data={'': ['VERSION']},
-      include_package_data=True,
       install_requires=[
           "coverage==4.3.1",
           "pytest==3.0.5",
