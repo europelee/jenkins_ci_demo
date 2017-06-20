@@ -18,6 +18,7 @@ pipeline {
                     reportFiles: 'test_result.html',
                     reportName: "TestReport"
                 ]) 
+                echo "${env.JOB_NAME}"
                 // requires SonarQube Scanner 2.8+
                 def scannerHome = tool config.tools.sonarqube_scanner;
                 withSonarQubeEnv(config.tools.sonarqube_svr) {
