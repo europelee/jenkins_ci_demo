@@ -1,75 +1,62 @@
 #!groovy
 
 pipeline {
-    agent master
-    currentBuild.result = "SUCCESS"
-    try {
-        stages {
-            stage ('checkout') {
-                steps {
-                    checkout scm
-                }
+    agent label: 'master'
+    environment {
+        currentBuild.result = "SUCCESS"
+    }
+    stages {
+        stage ('checkout') {
+            steps {
+                checkout scm
             }
-            stage ('build') {
-                steps {
-                    echo "build(compile, code analysis, unit test, pkg)"
-                    echo "make distribution(like tar.gz rpm etc.)"
+        }
+        stage ('build') {
+            steps {
+                echo "build(compile, code analysis, unit test, pkg)"
+                echo "make distribution(like tar.gz rpm etc.)"
 
-                    def workspace = pwd()
-                    sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/test_report/test_result.html)"
-                    publishHTML (target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: true,
-                        reportDir: 'test_report',
-                        reportFiles: 'test_result.html',
-                        reportName: "TestReport"
-                    ]) 
-                    // requires SonarQube Scanner 2.8+
-                    def scannerHome = tool 'sonar-scanner-3.0.3.778';
-                    withSonarQubeEnv('sonarqube-5.6.6') {
-                      sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=jenkins_ci_demo_dev -Dsonar.projectName=jenkins_ci_demo -Dsonar.projectVersion=1.0 -Dsonar.sources=."
-                    }
-                    //todo: make distribution
-                    //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
-                    sh "python setup.py sdist"
+                def workspace = pwd()
+                sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/test_report/test_result.html)"
+                publishHTML (target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: 'test_report',
+                    reportFiles: 'test_result.html',
+                    reportName: "TestReport"
+                ]) 
+                // requires SonarQube Scanner 2.8+
+                def scannerHome = tool 'sonar-scanner-3.0.3.778';
+                withSonarQubeEnv('sonarqube-5.6.6') {
+                  sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=jenkins_ci_demo_dev -Dsonar.projectName=jenkins_ci_demo -Dsonar.projectVersion=1.0 -Dsonar.sources=."
                 }
+                //todo: make distribution
+                //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
+                sh "python setup.py sdist"
             }
-            
-            stage ('deploy') {
-                steps {
-                    echo "deploy distribution to dev dockers"
-                    def workspace = pwd()
-                    def verstr = readFile "${workspace}/VERSION"
-                    def version = verstr.trim()
-                    echo "${version}" 
-                    def utils = load "${workspace}/ci/utils.groovy"
-                    def pkg = 'jenkins_ci_demo-' + version + '.tar.gz'
-                    echo "${pkg}"
-                    utils.deploy2dev("${workspace}/dist", pkg)
-                }
+        }
+        
+        stage ('deploy') {
+            steps {
+                echo "deploy distribution to dev dockers"
+                def workspace = pwd()
+                def verstr = readFile "${workspace}/VERSION"
+                def version = verstr.trim()
+                echo "${version}" 
+                def utils = load "${workspace}/ci/utils.groovy"
+                def pkg = 'jenkins_ci_demo-' + version + '.tar.gz'
+                echo "${pkg}"
+                utils.deploy2dev("${workspace}/dist", pkg)
             }
         }
     }
-    catch (err) {
-        currentBuild.result = 'FAILURE'
-    }
-    finally {
-        if (currentBuild.result == 'SUCCESS') {
+    post {
+        always {
             emailext (
               subject: '${DEFAULT_SUBJECT}',
               body: '${DEFAULT_CONTENT}',
-              to: '${DEFAULT_REPLYTO}' 
-            ) 
-            //mail (to: 'ouzhou.li@quantil.com',
-            //     subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) was already deployed",
-            //     body: "a test");
-        }
-        else {
-            emailext (
-              subject: '${DEFAULT_SUBJECT}',
-              body: '${DEFAULT_CONTENT}',
-              to: '${DEFAULT_REPLYTO}'
+              to: 'ouzhou.li@quantil.com'
             ) 
         }
     }
