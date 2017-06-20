@@ -4,8 +4,6 @@ def PROJ_KEY = ''
 def PROJ_NAME = ''
 pipeline {
     agent { label 'master'}
-    environment {
-    }
     stages {
         stage ('build') {
             steps {
