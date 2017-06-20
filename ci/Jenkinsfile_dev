@@ -9,7 +9,7 @@ pipeline {
                 echo "make distribution(like tar.gz rpm etc.)"
                 script {
                 def workspace = pwd()
-                sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/test_report/test_result.html)"
+                sh "${workspace}/misc/unit_test.sh"
                 publishHTML (target: [
                     allowMissing: false,
                     alwaysLinkToLastBuild: false,
@@ -26,7 +26,7 @@ pipeline {
                 //todo: make distribution
                 //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
                 }
-                sh "python setup.py sdist"
+                sh "${workspace}/misc/package.sh"
             }
         }
         
