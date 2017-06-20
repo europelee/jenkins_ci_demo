@@ -18,7 +18,7 @@ def ssh_cmd(host, port, cmd) {
     }
 }
 
-def deploy_cmd(host, port, dir, pkg) {
+def deploy_cmd_deprecated(host, port, dir, pkg) {
     return {
         node {
             def dir_name = pkg - ".tar.gz"
@@ -33,15 +33,24 @@ def deploy_cmd(host, port, dir, pkg) {
         }
     }
 }
+def deploy_cmd(host, port, pkg_path, deploy_script) {
+    return {
+        node {
+            def dst_dir="/opt"
+            sh "scp -P${port} ${pkg_path} ${host}:${dst_dir}"
+            sh "cat ${deploy_script}|ssh -t -p ${port} ${host}"
+        }
+    }
+}
 
-def deploy2dev(dir, pkg) {
+def deploy2dev(dir, pkg_path, deploy_script) {
     def config = readYaml file: 'ci/config.yml'
     def steps4parallel = [:]
     for( i = 0; i < config.deploy.dev.dockers.size(); i++) {
         def docker_cfg = config.deploy.dev.dockers[i]
         def name = docker_cfg.name
         def step_name = "op ${name}"
-        steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, dir, pkg)
+        steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, pkg_path, deploy_script)
     }
     parallel steps4parallel
 }

@@ -25,7 +25,6 @@ pipeline {
                   sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${env.JOB_NAME} -Dsonar.projectName=${env.JOB_BASE_NAME} -Dsonar.projectVersion=1.0 -Dsonar.sources=."
                 }
                 //todo: make distribution
-                //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
                 }
                 sh "${workspace}/misc/package.sh"
                 sh 'printenv'
@@ -41,9 +40,8 @@ pipeline {
                 def version = verstr.trim()
                 echo "${version}" 
                 def utils = load "${workspace}/ci/utils.groovy"
-                def pkg = 'jenkins_ci_demo-' + version + '.tar.gz'
-                echo "${pkg}"
-                utils.deploy2dev("${workspace}/dist", pkg)
+                def pkg_path = sh(returnStdout: true, script: "${workspace}/misc/package_info.sh").trim()
+                utils.deploy2dev("${workspace}/dist", pkg_path, "${workspace}/misc/deploy.sh")
                 }
             }
         }
