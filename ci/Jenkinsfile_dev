@@ -1,10 +1,7 @@
 #!groovy
 
 pipeline {
-    agent label: 'master'
-    environment {
-        currentBuild.result = "SUCCESS"
-    }
+    agent { label 'master'}
     stages {
         stage ('checkout') {
             steps {
@@ -15,7 +12,7 @@ pipeline {
             steps {
                 echo "build(compile, code analysis, unit test, pkg)"
                 echo "make distribution(like tar.gz rpm etc.)"
-
+                script {
                 def workspace = pwd()
                 sh "(cd /usr/local/jenkins_ci_demo;py.test test/test_jenkins_ci_demo.py --html=${workspace}/test_report/test_result.html)"
                 publishHTML (target: [
@@ -33,6 +30,7 @@ pipeline {
                 }
                 //todo: make distribution
                 //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
+                }
                 sh "python setup.py sdist"
             }
         }
@@ -40,6 +38,7 @@ pipeline {
         stage ('deploy') {
             steps {
                 echo "deploy distribution to dev dockers"
+                script {
                 def workspace = pwd()
                 def verstr = readFile "${workspace}/VERSION"
                 def version = verstr.trim()
@@ -48,6 +47,7 @@ pipeline {
                 def pkg = 'jenkins_ci_demo-' + version + '.tar.gz'
                 echo "${pkg}"
                 utils.deploy2dev("${workspace}/dist", pkg)
+                }
             }
         }
     }
