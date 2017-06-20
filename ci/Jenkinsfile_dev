@@ -3,11 +3,6 @@
 pipeline {
     agent { label 'master'}
     stages {
-        stage ('checkout') {
-            steps {
-                checkout scm
-            }
-        }
         stage ('build') {
             steps {
                 echo "build(compile, code analysis, unit test, pkg)"
