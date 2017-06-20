@@ -27,6 +27,7 @@ pipeline {
                 //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
                 }
                 sh "${workspace}/misc/package.sh"
+                sh 'printenv'
             }
         }
         
