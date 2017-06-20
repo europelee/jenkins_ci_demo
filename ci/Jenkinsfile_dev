@@ -1,7 +1,5 @@
 #!groovy
 
-def PROJ_KEY = ''
-def PROJ_NAME = ''
 pipeline {
     agent { label 'master'}
     stages {
@@ -20,12 +18,11 @@ pipeline {
                     reportFiles: 'test_result.html',
                     reportName: "TestReport"
                 ]) 
-                PROJ_KEY = env.JOB_NAME
-                PROJ_NAME = env.JOB_BASE_NAME
                 // requires SonarQube Scanner 2.8+
+                def config = readYaml file: 'ci/config.yml'
                 def scannerHome = tool config.tools.sonarqube_scanner;
                 withSonarQubeEnv(config.tools.sonarqube_svr) {
-                  sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${PROJ_KEY} -Dsonar.projectName=${PROJ_NAME} -Dsonar.projectVersion=1.0 -Dsonar.sources=."
+                  sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${env.JOB_NAME} -Dsonar.projectName=${env.JOB_BASE_NAME} -Dsonar.projectVersion=1.0 -Dsonar.sources=."
                 }
                 //todo: make distribution
                 //eg: generate jenkins_ci_demo_1.0.0-alpha.tar.gz
