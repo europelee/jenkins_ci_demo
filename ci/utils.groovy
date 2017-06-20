@@ -37,11 +37,10 @@ def deploy_cmd(host, port, dir, pkg) {
 def deploy2dev(dir, pkg) {
     def config = readYaml file: 'ci/config.yml'
     def steps4parallel = [:]
-    for( i = 0; i < config.dev.dockers.size(); i++) {
-        def docker_cfg = config.dev.dockers[i]
+    for( i = 0; i < config.deploy.dev.dockers.size(); i++) {
+        def docker_cfg = config.deploy.dev.dockers[i]
         def name = docker_cfg.name
-        def step_name = "echoing ${name}"
-        echo "${docker_cfg.ssh_host}"
+        def step_name = "op ${name}"
         steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, dir, pkg)
     }
     parallel steps4parallel
@@ -53,7 +52,7 @@ def deploy2qa_xm2(dir, pkg) {
     for( i = 0; i < config.qa_xm.dockers.size(); i++) {
         def docker_cfg = config.qa_xm.dockers[i]
         def name = docker_cfg.name
-        def step_name = "echoing ${name}"
+        def step_name = "op ${name}"
         echo "${docker_cfg.ssh_host}"
         steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, dir, pkg)
     }
@@ -75,7 +74,7 @@ def deploy2qa_xm(version, pkg) {
     for( i = 0; i < config.deploy.qa_xm.lbdns_dockers.size(); i++) {
         def docker_cfg = config.deploy.qa_xm.lbdns_dockers[i]
         def name = docker_cfg.name
-        def step_name = "echoing ${name}"
+        def step_name = "op ${name}"
         steps4parallel[step_name] = ssh_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, cmd)
     }
     parallel steps4parallel
