@@ -9,7 +9,7 @@ pipeline {
                 echo "make distribution(like tar.gz rpm etc.)"
                 script {
                 def workspace = pwd()
-                sh "${workspace}/misc/unit_test.sh"
+                sh "${workspace}/misc/unit_test.sh ${workspace}"
                 publishHTML (target: [
                     allowMissing: false,
                     alwaysLinkToLastBuild: false,
@@ -41,7 +41,7 @@ pipeline {
                 def version = verstr.trim()
                 echo "${version}" 
                 def utils = load "${workspace}/ci/utils.groovy"
-                def pkg_path = sh(returnStdout: true, script: "${workspace}/misc/package_info.sh").trim()
+                def pkg_path = sh(returnStdout: true, script: "${workspace}/misc/package_info.sh ${workspace}").trim()
                 utils.deploy2dev("${workspace}/dist", pkg_path, "${workspace}/misc/deploy.sh")
                 }
             }
