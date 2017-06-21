@@ -18,7 +18,7 @@ def ssh_cmd(host, port, cmd) {
     }
 }
 
-def deploy_cmd(host, port, dir, pkg) {
+def deploy_cmd_deprecated(host, port, dir, pkg) {
     return {
         node {
             def dir_name = pkg - ".tar.gz"
@@ -26,22 +26,31 @@ def deploy_cmd(host, port, dir, pkg) {
             sh "scp -P${port} ${dir}/${pkg} ${host}:${dst_dir}"
             def untar_cmd = "(cd ${dst_dir}; tar xvf ${pkg})"
             def cp_cmd = "(ls /usr/local/jenkins_ci_demo||mkdir /usr/local/jenkins_ci_demo;cp -r /opt/${dir_name}/* /usr/local/jenkins_ci_demo/)"
-            def install_cmd = "(cd /usr/local/jenkins_ci_demo;python setup.py install)"
-            def cmd = "(${untar_cmd}; ${cp_cmd}; ${install_cmd})"
+            // def install_cmd = "(cd /usr/local/jenkins_ci_demo;python setup.py install)"
+            def test_cmd = "(cd /usr/local/jenkins_ci_demo; cp jenkins_ci_demo/index.html /usr/share/httpd/noindex/)"
+            def cmd = "(${untar_cmd}; ${cp_cmd}; ${test_cmd})"
             sh "ssh -t -p ${port} ${host} \"${cmd}\""
         }
     }
 }
+def deploy_cmd(host, port, pkg_path, deploy_script) {
+    return {
+        node {
+            def dst_dir="/opt"
+            sh "scp -P${port} ${pkg_path} ${host}:${dst_dir}"
+            sh "cat ${deploy_script}|ssh -t -p ${port} ${host}"
+        }
+    }
+}
 
-def deploy2dev(dir, pkg) {
+def deploy2dev(dir, pkg_path, deploy_script) {
     def config = readYaml file: 'ci/config.yml'
     def steps4parallel = [:]
-    for( i = 0; i < config.dev.dockers.size(); i++) {
-        def docker_cfg = config.dev.dockers[i]
+    for( i = 0; i < config.deploy.dev.dockers.size(); i++) {
+        def docker_cfg = config.deploy.dev.dockers[i]
         def name = docker_cfg.name
-        def step_name = "echoing ${name}"
-        echo "${docker_cfg.ssh_host}"
-        steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, dir, pkg)
+        def step_name = "op ${name}"
+        steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, pkg_path, deploy_script)
     }
     parallel steps4parallel
 }
@@ -52,7 +61,7 @@ def deploy2qa_xm2(dir, pkg) {
     for( i = 0; i < config.qa_xm.dockers.size(); i++) {
         def docker_cfg = config.qa_xm.dockers[i]
         def name = docker_cfg.name
-        def step_name = "echoing ${name}"
+        def step_name = "op ${name}"
         echo "${docker_cfg.ssh_host}"
         steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, dir, pkg)
     }
@@ -74,7 +83,7 @@ def deploy2qa_xm(version, pkg) {
     for( i = 0; i < config.deploy.qa_xm.lbdns_dockers.size(); i++) {
         def docker_cfg = config.deploy.qa_xm.lbdns_dockers[i]
         def name = docker_cfg.name
-        def step_name = "echoing ${name}"
+        def step_name = "op ${name}"
         steps4parallel[step_name] = ssh_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, cmd)
     }
     parallel steps4parallel
