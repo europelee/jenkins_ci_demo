@@ -9,7 +9,7 @@ pipeline {
                 echo "make distribution(like tar.gz rpm etc.)"
                 script {
                 def workspace = pwd()
-                sh "${workspace}/misc/unit_test.sh"
+                sh "${workspace}/misc/unit_test.sh ${workspace}"
                 publishHTML (target: [
                     allowMissing: false,
                     alwaysLinkToLastBuild: false,
@@ -18,16 +18,17 @@ pipeline {
                     reportFiles: 'test_result.html',
                     reportName: "TestReport"
                 ]) 
+                sh 'printenv'
                 // requires SonarQube Scanner 2.8+
                 def config = readYaml file: 'ci/config.yml'
                 def scannerHome = tool config.tools.sonarqube_scanner;
+                def proj_name = env.JOB_NAME.substring(0, env.JOB_NAME.indexOf("/"))
                 withSonarQubeEnv(config.tools.sonarqube_svr) {
-                  sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${env.JOB_NAME} -Dsonar.projectName=${env.JOB_BASE_NAME} -Dsonar.projectVersion=1.0 -Dsonar.sources=."
+                  sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${proj_name} -Dsonar.projectName=${proj_name} -Dsonar.projectVersion=1.0 -Dsonar.sources=."
                 }
                 //todo: make distribution
                 }
                 sh "${workspace}/misc/package.sh"
-                sh 'printenv'
             }
         }
         
@@ -40,7 +41,7 @@ pipeline {
                 def version = verstr.trim()
                 echo "${version}" 
                 def utils = load "${workspace}/ci/utils.groovy"
-                def pkg_path = sh(returnStdout: true, script: "${workspace}/misc/package_info.sh").trim()
+                def pkg_path = sh(returnStdout: true, script: "${workspace}/misc/package_info.sh ${workspace}").trim()
                 utils.deploy2dev("${workspace}/dist", pkg_path, "${workspace}/misc/deploy.sh")
                 }
             }
