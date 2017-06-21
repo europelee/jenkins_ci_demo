@@ -1,0 +1,59 @@
+#!groovy
+
+pipeline {
+    agent { label 'master'}
+    stages {
+        stage ('build') {
+            steps {
+                echo "build(compile, code analysis, unit test, pkg)"
+                echo "make distribution(like tar.gz rpm etc.)"
+                script {
+                def workspace = pwd()
+                sh "${workspace}/misc/unit_test.sh"
+                publishHTML (target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: 'test_report',
+                    reportFiles: 'test_result.html',
+                    reportName: "TestReport"
+                ]) 
+                // requires SonarQube Scanner 2.8+
+                def config = readYaml file: 'ci/config.yml'
+                def scannerHome = tool config.tools.sonarqube_scanner;
+                withSonarQubeEnv(config.tools.sonarqube_svr) {
+                  sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${env.JOB_NAME} -Dsonar.projectName=${env.JOB_BASE_NAME} -Dsonar.projectVersion=1.0 -Dsonar.sources=."
+                }
+                //todo: make distribution
+                }
+                sh "${workspace}/misc/package.sh"
+                sh 'printenv'
+            }
+        }
+        
+        stage ('deploy') {
+            steps {
+                echo "deploy distribution to dev dockers"
+                script {
+                def workspace = pwd()
+                def verstr = readFile "${workspace}/VERSION"
+                def version = verstr.trim()
+                echo "${version}" 
+                def utils = load "${workspace}/ci/utils.groovy"
+                def pkg_path = sh(returnStdout: true, script: "${workspace}/misc/package_info.sh").trim()
+                utils.deploy2dev("${workspace}/dist", pkg_path, "${workspace}/misc/deploy.sh")
+                }
+            }
+        }
+    }
+    post {
+        always {
+            emailext (
+              subject: '${DEFAULT_SUBJECT}',
+              body: '${DEFAULT_CONTENT}',
+              to: 'ouzhou.li@quantil.com'
+            ) 
+        }
+    }
+}
+
