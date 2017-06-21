@@ -52,13 +52,13 @@ pipeline {
             }
         }
         stage ('auto test') {
-            when { branch "*alpha*" }
+            when { env.BRANCH_NAME "*alpha*" }
             steps {
                 echo "auto test"
             }
         }
         stage ('auto tag') {
-            when { branch "*alpha*" }
+            when { env.BRANCH_NAME "*alpha*" }
             steps {
                 echo "auto tag"
             }
