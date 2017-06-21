@@ -18,6 +18,7 @@ pipeline {
                     reportFiles: 'test_result.html',
                     reportName: "TestReport"
                 ]) 
+                sh 'printenv'
                 // requires SonarQube Scanner 2.8+
                 def config = readYaml file: 'ci/config.yml'
                 def scannerHome = tool config.tools.sonarqube_scanner;
@@ -27,7 +28,6 @@ pipeline {
                 //todo: make distribution
                 }
                 sh "${workspace}/misc/package.sh"
-                sh 'printenv'
             }
         }
         
