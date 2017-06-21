@@ -52,15 +52,17 @@ pipeline {
             }
         }
         stage ('auto test') {
-            when { env.BRANCH_NAME "*alpha*" }
             steps {
-                echo "auto test"
+                if (env.BRANCH_NAME.contains("alpha") == true) {
+                    echo "auto test"
+                }
             }
         }
         stage ('auto tag') {
-            when { env.BRANCH_NAME "*alpha*" }
             steps {
-                echo "auto tag"
+                if (env.BRANCH_NAME.contains("alpha") == true) {
+                    echo "auto tag"
+                }
             }
         }
     }
