@@ -44,6 +44,7 @@ def deploy_cmd(host, port, pkg_path, deploy_script) {
 }
 
 def deploy2dev(dir, pkg_path, deploy_script) {
+    echo "deploy2dev"
     def config = readYaml file: 'ci/config.yml'
     def steps4parallel = [:]
     for( i = 0; i < config.deploy.dev.dockers.size(); i++) {
@@ -55,15 +56,15 @@ def deploy2dev(dir, pkg_path, deploy_script) {
     parallel steps4parallel
 }
 
-def deploy2qa_xm2(dir, pkg) {
+def deploy2qa_xm2(dir, pkg_path, deploy_script) {
+    echo "deploy2qa_xm2"
     def config = readYaml file: 'ci/config.yml'
     def steps4parallel = [:]
-    for( i = 0; i < config.qa_xm.dockers.size(); i++) {
-        def docker_cfg = config.qa_xm.dockers[i]
+    for( i = 0; i < config.deploy.qa_xm.dockers.size(); i++) {
+        def docker_cfg = config.deploy.qa_xm.dockers[i]
         def name = docker_cfg.name
         def step_name = "op ${name}"
-        echo "${docker_cfg.ssh_host}"
-        steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, dir, pkg)
+        steps4parallel[step_name] = deploy_cmd(docker_cfg.ssh_host, docker_cfg.ssh_port, pkg_path, deploy_script) 
     }
     parallel steps4parallel
 }
