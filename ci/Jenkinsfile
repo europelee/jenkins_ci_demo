@@ -53,15 +53,19 @@ pipeline {
         }
         stage ('auto test') {
             steps {
+                script {
                 if (env.BRANCH_NAME.contains("alpha") == true) {
                     echo "auto test"
+                }
                 }
             }
         }
         stage ('auto tag') {
             steps {
+                script {
                 if (env.BRANCH_NAME.contains("alpha") == true) {
                     echo "auto tag"
+                }
                 }
             }
         }
