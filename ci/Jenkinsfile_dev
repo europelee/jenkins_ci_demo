@@ -22,7 +22,7 @@ pipeline {
                 // requires SonarQube Scanner 2.8+
                 def config = readYaml file: 'ci/config.yml'
                 def scannerHome = tool config.tools.sonarqube_scanner;
-                def proj_name = env.JOB_NAME.substring(0, log.indexOf("/")-1)
+                def proj_name = env.JOB_NAME.substring(0, env.JOB_NAME.indexOf("/")-1)
                 withSonarQubeEnv(config.tools.sonarqube_svr) {
                   sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=${proj_name} -Dsonar.projectName=${proj_name} -Dsonar.projectVersion=1.0 -Dsonar.sources=."
                 }
