@@ -9,11 +9,13 @@ tools:
 deploy:
     dev:
         dockers: 
-         - name: dev_l0
+         - name: dev
            ssh_host: root@220.243.197.80
            ssh_port: 57891 
     qa_xm:
         dockers:
-         - name: l1 
+         - name: qa 
            ssh_host: root@220.243.197.80
            ssh_port: 57891
+unit_test:
+    on: false 

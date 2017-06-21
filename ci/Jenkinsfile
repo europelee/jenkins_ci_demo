@@ -10,7 +10,10 @@ pipeline {
                 echo "build(compile, code analysis, unit test, pkg)"
                 echo "make distribution(like tar.gz rpm etc.)"
                 script {
+                def config = readYaml file: 'ci/config.yml'
                 def workspace = pwd()
+                def is_unittest = config.unit_test.on
+                if (is_unittest == true) {
                 sh "${workspace}/test/unit_test/unit_test.sh ${workspace}"
                 publishHTML (target: [
                     allowMissing: false,
@@ -19,10 +22,10 @@ pipeline {
                     reportDir: 'test_report',
                     reportFiles: 'test_result.html',
                     reportName: "TestReport"
-                ]) 
+                ])
+                }
                 sh 'printenv'
                 // requires SonarQube Scanner 2.8+
-                def config = readYaml file: 'ci/config.yml'
                 def scannerHome = tool config.tools.sonarqube_scanner;
                 proj_name = env.JOB_NAME.substring(0, env.JOB_NAME.indexOf("/"))
                 withSonarQubeEnv(config.tools.sonarqube_svr) {
