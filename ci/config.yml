@@ -1,10 +1,19 @@
-dev:
-    dockers: 
-     - name: dev_l0
-       ssh_host: root@220.243.197.80
-       ssh_port: 57891 
-qa_xm:
-    dockers:
-     - name: l1 
-       ssh_host: root@220.243.197.91
-       ssh_port: 57891
+softrepo:
+    url: http://softrepo.qtlcdn.com/gslb/lbdns/
+    dir: /opt/softrepo/gslb/lbdns/  
+    ssh_host: root@203.130.48.199   
+    ssh_port: 57891
+tools:
+    sonarqube_scanner: sonar-scanner-3.0.3.778
+    sonarqube_svr: sonarqube-5.6.6  
+deploy:
+    dev:
+        dockers: 
+         - name: dev_l0
+           ssh_host: root@220.243.197.80
+           ssh_port: 57891 
+    qa_xm:
+        dockers:
+         - name: l1 
+           ssh_host: root@220.243.197.91
+           ssh_port: 57891
